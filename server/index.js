@@ -10,7 +10,7 @@ const app = express();
 // ── Middleware ──────────────────────────────────────────────────────────────
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', /\.replit\.dev$/],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5000', /\.replit\.dev$/, /\.replit\.app$/, /\.kirk\.replit\.dev$/],
   credentials: true,
 }));
 app.use(morgan('dev'));

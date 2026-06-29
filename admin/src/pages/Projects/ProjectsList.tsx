@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { getAdminProjects, deleteProject } from '../../api/axios';
-import { Plus, Edit, Trash2, Search, MapPin } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 function formatPrice(p: number) {
@@ -15,11 +15,13 @@ function formatPrice(p: number) {
 export default function ProjectsList() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
+  const [page, setPage] = useState(1);
+  const LIMIT = 20;
   const qc = useQueryClient();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin-projects', search, status],
-    queryFn: () => getAdminProjects({ search: search || undefined, status: status || undefined }),
+    queryKey: ['admin-projects', search, status, page],
+    queryFn: () => getAdminProjects({ search: search || undefined, status: status || undefined, page, limit: LIMIT }),
   });
 
   const deleteMutation = useMutation({
@@ -33,13 +35,15 @@ export default function ProjectsList() {
   };
 
   const projects = data?.data || [];
+  const total = data?.total || 0;
+  const totalPages = Math.ceil(total / LIMIT);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-xl font-bold text-gray-800">Projects</h1>
-          <p className="text-sm text-gray-500">{data?.total || 0} total projects</p>
+          <p className="text-sm text-gray-500">{total} total projects</p>
         </div>
         <Link to="/projects/new" className="btn-primary flex items-center gap-2"><Plus size={16} />New Project</Link>
       </div>
@@ -47,9 +51,9 @@ export default function ProjectsList() {
       <div className="card p-4 flex gap-3 flex-wrap">
         <div className="relative flex-1 min-w-48">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input value={search} onChange={e => setSearch(e.target.value)} className="input pl-9" placeholder="Search projects..." />
+          <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} className="input pl-9" placeholder="Search projects..." />
         </div>
-        <select value={status} onChange={e => setStatus(e.target.value)} className="input w-auto">
+        <select value={status} onChange={e => { setStatus(e.target.value); setPage(1); }} className="input w-auto">
           <option value="">All Status</option>
           <option value="upcoming">Upcoming</option>
           <option value="ongoing">Ongoing</option>
@@ -100,6 +104,22 @@ export default function ProjectsList() {
             </tbody>
           </table>
         </div>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
+            <span className="text-sm text-gray-500">Page {page} of {totalPages} ({total} total)</span>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="p-1.5 rounded border disabled:opacity-40 hover:bg-white"><ChevronLeft size={16} /></button>
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const start = Math.max(1, Math.min(page - 2, totalPages - 4));
+                const pg = start + i;
+                return pg <= totalPages ? (
+                  <button key={pg} onClick={() => setPage(pg)} className={`w-8 h-8 text-sm rounded ${pg === page ? 'bg-primary text-white' : 'border hover:bg-white'}`}>{pg}</button>
+                ) : null;
+              })}
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="p-1.5 rounded border disabled:opacity-40 hover:bg-white"><ChevronRight size={16} /></button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

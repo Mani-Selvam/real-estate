@@ -1,0 +1,756 @@
+Build a production-ready Enterprise Real Estate Platform.
+
+Technology
+
+Backend
+---------
+Node.js
+Express.js
+PostgreSQL
+
+Frontend
+
+1. Public Website
+React
+Vite
+TypeScript
+Tailwind CSS
+
+localhost:3000
+
+2. Admin CRM
+React
+Vite
+TypeScript
+Tailwind CSS
+
+localhost:3001
+
+Backend
+
+localhost:5001/api
+
+One Backend
+One Database
+
+The Public Website and Admin Panel must use the same API and database.
+
+======================================================
+MAIN CONCEPT
+======================================================
+
+The Public Website should NEVER contain hardcoded content.
+
+Everything shown on the website must come from the Admin Panel.
+
+Admin adds data.
+
+Website automatically displays it.
+
+Customer submits enquiry.
+
+Enquiry automatically appears in Admin CRM.
+
+Everything must be connected.
+
+======================================================
+PUBLIC WEBSITE
+======================================================
+
+Pages
+
+Home
+
+About
+
+Projects
+
+Properties
+
+Property Details
+
+Services
+
+Gallery
+
+Testimonials
+
+Blog
+
+FAQ
+
+Contact
+
+Privacy Policy
+
+Terms
+
+======================================================
+HOME PAGE
+======================================================
+
+Hero Banner
+
+Dynamic
+
+Admin can
+
+Create Banner
+
+Edit Banner
+
+Delete Banner
+
+Change Banner Order
+
+Upload Desktop Image
+
+Upload Mobile Image
+
+Title
+
+Subtitle
+
+Button
+
+Status
+
+Website automatically displays active banners.
+
+------------------------------------------------------
+
+Featured Projects
+
+Admin creates Projects
+
+Website automatically displays latest projects.
+
+------------------------------------------------------
+
+Featured Properties
+
+Admin creates Properties.
+
+Website displays Available Properties only.
+
+------------------------------------------------------
+
+Statistics
+
+Admin manages
+
+Years Experience
+
+Projects
+
+Customers
+
+Properties Sold
+
+Website automatically updates.
+
+------------------------------------------------------
+
+Services
+
+Admin creates services.
+
+Website displays them.
+
+------------------------------------------------------
+
+Testimonials
+
+Admin creates testimonials.
+
+Website displays.
+
+------------------------------------------------------
+
+Gallery
+
+Admin uploads gallery.
+
+Website displays.
+
+------------------------------------------------------
+
+Blog
+
+Admin creates blogs.
+
+Website displays.
+
+------------------------------------------------------
+
+FAQ
+
+Admin creates FAQ.
+
+Website displays.
+
+------------------------------------------------------
+
+Footer
+
+Admin controls
+
+Address
+
+Phone
+
+Email
+
+Social Links
+
+Working Hours
+
+Copyright
+
+======================================================
+PROJECT MODULE
+======================================================
+
+Admin creates project.
+
+Fields
+
+Project Name
+
+Project Code
+
+Description
+
+Location
+
+Google Map
+
+Price Starting From
+
+Status
+
+Upcoming
+
+Ongoing
+
+Completed
+
+Possession Date
+
+Amenities
+
+Gallery
+
+Videos
+
+Brochure
+
+Floor Plans
+
+Featured Project
+
+SEO
+
+Website automatically creates
+
+Project Card
+
+Project Details Page
+
+Project Gallery
+
+Related Properties
+
+======================================================
+PROPERTY MODULE
+======================================================
+
+Admin creates property.
+
+Fields
+
+Property Title
+
+Property Code
+
+Project
+
+Category
+
+Apartment
+
+Villa
+
+Plot
+
+Commercial
+
+Independent House
+
+Price
+
+Offer Price
+
+Area
+
+Bedrooms
+
+Bathrooms
+
+Facing
+
+Parking
+
+Description
+
+Amenities
+
+Images
+
+Videos
+
+Floor Plan
+
+Google Map
+
+Nearby Places
+
+Status
+
+Available
+
+Reserved
+
+Booked
+
+Sold
+
+Featured
+
+SEO
+
+Website automatically displays
+
+Property Listing
+
+Property Details
+
+Search
+
+Filters
+
+Related Properties
+
+======================================================
+PROPERTY SEARCH
+======================================================
+
+Search
+
+Location
+
+Budget
+
+Category
+
+Bedrooms
+
+Bathrooms
+
+Area
+
+Facing
+
+Price
+
+Availability
+
+Search results should come from PostgreSQL.
+
+======================================================
+BOOK SITE VISIT
+======================================================
+
+Website Form
+
+Name
+
+Mobile
+
+Email
+
+Property
+
+Preferred Date
+
+Preferred Time
+
+Remarks
+
+Save into database.
+
+Automatically create Lead.
+
+Notify Admin Dashboard.
+
+======================================================
+PROPERTY ENQUIRY
+======================================================
+
+Website Form
+
+Name
+
+Mobile
+
+Email
+
+Interested Property
+
+Message
+
+Save into database.
+
+Create Lead automatically.
+
+Lead Source = Website
+
+======================================================
+CONTACT PAGE
+======================================================
+
+Contact Form
+
+Name
+
+Mobile
+
+Email
+
+Subject
+
+Message
+
+Save into database.
+
+Show in Admin Contact Enquiries.
+
+======================================================
+NEWSLETTER
+======================================================
+
+Customer enters email.
+
+Save into Newsletter table.
+
+Admin can export.
+
+======================================================
+ADMIN PANEL
+======================================================
+
+Dashboard
+
+Today's Leads
+
+Today's Followups
+
+Bookings
+
+Revenue
+
+Properties
+
+Projects
+
+Notifications
+
+Charts
+
+Calendar
+
+======================================================
+PROJECT MANAGEMENT
+======================================================
+
+CRUD
+
+Gallery
+
+Videos
+
+Amenities
+
+SEO
+
+Status
+
+Featured
+
+Publish
+
+======================================================
+PROPERTY MANAGEMENT
+======================================================
+
+CRUD
+
+Gallery
+
+Videos
+
+Amenities
+
+Floor Plans
+
+Google Map
+
+SEO
+
+Publish
+
+======================================================
+LEAD MANAGEMENT
+======================================================
+
+Website Leads
+
+Manual Leads
+
+Facebook Leads
+
+Instagram Leads
+
+Google Leads
+
+Walk-in
+
+Referral
+
+Assign Sales Executive
+
+Lead Status
+
+Timeline
+
+Notes
+
+Documents
+
+======================================================
+CUSTOMER MANAGEMENT
+======================================================
+
+Profile
+
+Interested Properties
+
+Booking
+
+Payment
+
+Registration
+
+Timeline
+
+======================================================
+FOLLOWUP
+======================================================
+
+Today's
+
+Tomorrow
+
+Pending
+
+Completed
+
+Reminder
+
+Calendar
+
+======================================================
+BOOKING
+======================================================
+
+Booking
+
+Agreement
+
+Payment
+
+Invoice
+
+Receipt
+
+======================================================
+PAYMENT
+======================================================
+
+Advance
+
+Installments
+
+Pending
+
+Completed
+
+======================================================
+CMS
+======================================================
+
+Homepage Banner
+
+About
+
+Services
+
+Gallery
+
+Testimonials
+
+FAQ
+
+Blog
+
+Footer
+
+SEO
+
+======================================================
+REPORTS
+======================================================
+
+Lead
+
+Revenue
+
+Bookings
+
+Property
+
+Projects
+
+Sales
+
+Website Enquiries
+
+======================================================
+SETTINGS
+======================================================
+
+Company Profile
+
+Logo
+
+Contact Details
+
+Social Links
+
+Website Settings
+
+======================================================
+FRONTEND RULES
+======================================================
+
+Every page must fetch data from API.
+
+No hardcoded data.
+
+Every form saves into PostgreSQL.
+
+Every Admin CRUD immediately updates Website.
+
+Use Axios.
+
+React Query.
+
+Reusable Components.
+
+Loading Skeleton.
+
+Pagination.
+
+Filters.
+
+Search.
+
+Responsive.
+
+======================================================
+BACKEND
+======================================================
+
+REST API
+
+JWT Authentication
+
+Role Based Access
+
+Validation
+
+Error Handling
+
+Upload Images
+
+Upload Videos
+
+File Manager
+
+PostgreSQL Relations
+
+======================================================
+RELATIONSHIP
+======================================================
+
+Admin creates Project
+↓
+Website displays Project
+
+Admin creates Property
+↓
+Website displays Property
+
+Customer submits Property Enquiry
+↓
+Lead automatically created
+
+Customer books Site Visit
+↓
+Lead + Site Visit created
+
+Customer submits Contact Form
+↓
+Contact Enquiry created
+
+Admin updates Property
+↓
+Website automatically updated
+
+Admin deletes Property
+↓
+Website removes Property
+
+Everything must be connected.
+
+No duplicate data.
+
+One backend.
+
+One database.
+
+Dynamic CMS.
+
+Production-ready architecture.
+
+Enterprise quality.
+
+Scalable.
+
+Clean code.
+
+No demo data.
+
+No shortcuts.
+
+Build like a premium commercial real estate product.

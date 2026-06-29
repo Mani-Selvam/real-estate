@@ -61,6 +61,7 @@ export const deleteLead = (id: number) => api.delete(`/leads/${id}`).then(r => r
 export const addLeadNote = (id: number, note: string) => api.post(`/leads/${id}/notes`, { note }).then(r => r.data);
 export const addFollowup = (id: number, data: object) => api.post(`/leads/${id}/followups`, data).then(r => r.data);
 export const getTodayFollowups = () => api.get('/leads/followups/today').then(r => r.data);
+export const completeFollowup = (id: number) => api.put(`/leads/followups/${id}/complete`).then(r => r.data);
 
 // ─── Enquiries ───────────────────────────────────────────────────────────────
 export const getContactEnquiries = (params?: object) => api.get('/enquiries/contact', { params }).then(r => r.data);

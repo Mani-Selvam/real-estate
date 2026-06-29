@@ -48,18 +48,44 @@ router.get('/:id', protect, async (req, res) => {
 // POST /api/bookings
 router.post('/', protect, async (req, res) => {
   const { customer_id, property_id, booking_date, total_price, discount, notes } = req.body;
+  if (!customer_id || !property_id) return res.status(400).json({ success: false, message: 'Customer and property are required' });
+  const client = await pool.connect();
   try {
+    await client.query('BEGIN');
+    // Lock and check property availability
+    const propCheck = await client.query(
+      `SELECT id, status FROM properties WHERE id = $1 FOR UPDATE`,
+      [property_id]
+    );
+    if (propCheck.rows.length === 0) { await client.query('ROLLBACK'); return res.status(404).json({ success: false, message: 'Property not found' }); }
+    if (['booked', 'sold'].includes(propCheck.rows[0].status)) {
+      await client.query('ROLLBACK');
+      return res.status(409).json({ success: false, message: `Property is already ${propCheck.rows[0].status}` });
+    }
+    // Check no active booking exists for this property
+    const existingBooking = await client.query(
+      `SELECT id FROM bookings WHERE property_id = $1 AND status NOT IN ('cancelled') LIMIT 1`,
+      [property_id]
+    );
+    if (existingBooking.rows.length > 0) {
+      await client.query('ROLLBACK');
+      return res.status(409).json({ success: false, message: 'An active booking already exists for this property' });
+    }
     const booking_number = 'BK' + Date.now();
-    const final_price = (parseFloat(total_price) - parseFloat(discount || 0)).toFixed(2);
-    const result = await pool.query(
+    const final_price = (parseFloat(total_price || 0) - parseFloat(discount || 0)).toFixed(2);
+    const result = await client.query(
       `INSERT INTO bookings (booking_number, customer_id, property_id, booking_date, total_price, discount, final_price, notes, created_by)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-      [booking_number, customer_id, property_id, booking_date || new Date(), total_price, discount || 0, final_price, notes, req.user.id]
+      [booking_number, customer_id, property_id, booking_date || new Date(), total_price || 0, discount || 0, final_price, notes, req.user.id]
     );
-    await pool.query('UPDATE properties SET status = $1 WHERE id = $2', ['booked', property_id]);
+    await client.query('UPDATE properties SET status = $1 WHERE id = $2', ['booked', property_id]);
+    await client.query('COMMIT');
     res.status(201).json({ success: true, data: result.rows[0] });
   } catch (err) {
+    await client.query('ROLLBACK');
     res.status(500).json({ success: false, message: err.message });
+  } finally {
+    client.release();
   }
 });
 

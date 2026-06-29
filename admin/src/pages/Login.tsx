@@ -49,7 +49,7 @@ export default function Login() {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
-        <p className="text-center text-xs text-gray-400 mt-6">Default: admin@realestate.com / Admin@123</p>
+        <p className="text-center text-xs text-gray-400 mt-6">Contact your administrator for login credentials.</p>
       </div>
     </div>
   );

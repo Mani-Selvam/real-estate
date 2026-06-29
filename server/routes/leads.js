@@ -32,6 +32,32 @@ router.get('/', protect, async (req, res) => {
   }
 });
 
+// GET /api/leads/followups/today  ← must be before /:id
+router.get('/followups/today', protect, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT f.*, l.name as lead_name, l.mobile, l.email FROM followups f JOIN leads l ON f.lead_id = l.id WHERE f.follow_up_date = CURRENT_DATE AND f.status = 'pending' ORDER BY f.follow_up_time`,
+    );
+    res.json({ success: true, data: result.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// PUT /api/leads/followups/:id/complete
+router.put('/followups/:id/complete', protect, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `UPDATE followups SET status = 'completed', updated_at = NOW() WHERE id = $1 RETURNING *`,
+      [req.params.id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Followup not found' });
+    res.json({ success: true, data: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // GET /api/leads/:id
 router.get('/:id', protect, async (req, res) => {
   try {
@@ -128,18 +154,6 @@ router.post('/:id/followups', protect, async (req, res) => {
     );
     await pool.query('INSERT INTO lead_timeline (lead_id, action, note, created_by) VALUES ($1,$2,$3,$4)', [req.params.id, 'Follow-up Scheduled', `Follow-up scheduled for ${follow_up_date}`, req.user.id]);
     res.status(201).json({ success: true, data: result.rows[0] });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// GET /api/leads/followups/today
-router.get('/followups/today', protect, async (req, res) => {
-  try {
-    const result = await pool.query(
-      `SELECT f.*, l.name as lead_name, l.mobile, l.email FROM followups f JOIN leads l ON f.lead_id = l.id WHERE f.follow_up_date = CURRENT_DATE AND f.status = 'pending' ORDER BY f.follow_up_time`,
-    );
-    res.json({ success: true, data: result.rows });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

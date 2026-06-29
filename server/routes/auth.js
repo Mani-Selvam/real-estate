@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 
 const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
@@ -44,8 +44,8 @@ router.put('/change-password', protect, async (req, res) => {
   }
 });
 
-// GET /api/auth/users
-router.get('/users', protect, async (req, res) => {
+// GET /api/auth/users  — superadmin only
+router.get('/users', protect, authorize('superadmin'), async (req, res) => {
   try {
     const result = await pool.query('SELECT id, name, email, role, avatar, is_active, created_at FROM admin_users ORDER BY created_at DESC');
     res.json({ success: true, data: result.rows });
@@ -54,9 +54,10 @@ router.get('/users', protect, async (req, res) => {
   }
 });
 
-// POST /api/auth/users
-router.post('/users', protect, async (req, res) => {
+// POST /api/auth/users  — superadmin only
+router.post('/users', protect, authorize('superadmin'), async (req, res) => {
   const { name, email, password, role } = req.body;
+  if (!name || !email || !password) return res.status(400).json({ success: false, message: 'Name, email and password required' });
   try {
     const hashed = await bcrypt.hash(password, 10);
     const result = await pool.query(
@@ -64,6 +65,21 @@ router.post('/users', protect, async (req, res) => {
       [name, email, hashed, role || 'admin']
     );
     res.status(201).json({ success: true, data: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// PUT /api/auth/users/:id  — superadmin only
+router.put('/users/:id', protect, authorize('superadmin'), async (req, res) => {
+  const { name, role, is_active } = req.body;
+  try {
+    const result = await pool.query(
+      'UPDATE admin_users SET name=$1, role=$2, is_active=$3, updated_at=NOW() WHERE id=$4 RETURNING id, name, email, role, is_active',
+      [name, role, is_active, req.params.id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'User not found' });
+    res.json({ success: true, data: result.rows[0] });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

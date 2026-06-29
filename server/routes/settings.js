@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 
-// PUT /api/settings (admin)
+// PUT /api/settings (admin — superadmin for sensitive keys)
 router.put('/', protect, async (req, res) => {
   const updates = req.body;
   try {

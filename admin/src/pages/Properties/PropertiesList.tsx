@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { getAdminProperties, deleteProperty } from '../../api/axios';
-import { Plus, Edit, Trash2, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 function formatPrice(p: number) {
@@ -17,11 +17,12 @@ export default function PropertiesList() {
   const [status, setStatus] = useState('');
   const [category, setCategory] = useState('');
   const [page, setPage] = useState(1);
+  const LIMIT = 20;
   const qc = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-properties', search, status, category, page],
-    queryFn: () => getAdminProperties({ search: search || undefined, status: status || undefined, category: category || undefined, page, limit: 20 }),
+    queryFn: () => getAdminProperties({ search: search || undefined, status: status || undefined, category: category || undefined, page, limit: LIMIT }),
   });
 
   const deleteMutation = useMutation({
@@ -31,13 +32,15 @@ export default function PropertiesList() {
   });
 
   const properties = data?.data || [];
+  const total = data?.total || 0;
+  const totalPages = Math.ceil(total / LIMIT);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-xl font-bold">Properties</h1>
-          <p className="text-sm text-gray-500">{data?.total || 0} total properties</p>
+          <p className="text-sm text-gray-500">{total} total properties</p>
         </div>
         <Link to="/properties/new" className="btn-primary flex items-center gap-2"><Plus size={16} />New Property</Link>
       </div>
@@ -45,13 +48,13 @@ export default function PropertiesList() {
       <div className="card p-4 flex gap-3 flex-wrap">
         <div className="relative flex-1 min-w-48">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input value={search} onChange={e => setSearch(e.target.value)} className="input pl-9" placeholder="Search properties..." />
+          <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} className="input pl-9" placeholder="Search properties..." />
         </div>
-        <select value={category} onChange={e => setCategory(e.target.value)} className="input w-auto">
+        <select value={category} onChange={e => { setCategory(e.target.value); setPage(1); }} className="input w-auto">
           <option value="">All Types</option>
           {['Apartment', 'Villa', 'Plot', 'Commercial', 'Independent House'].map(c => <option key={c} value={c}>{c}</option>)}
         </select>
-        <select value={status} onChange={e => setStatus(e.target.value)} className="input w-auto">
+        <select value={status} onChange={e => { setStatus(e.target.value); setPage(1); }} className="input w-auto">
           <option value="">All Status</option>
           {['available', 'reserved', 'booked', 'sold'].map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
         </select>
@@ -82,9 +85,9 @@ export default function PropertiesList() {
                     {p.project_name && <div className="text-xs text-gray-400">{p.project_name}</div>}
                   </td>
                   <td className="table-td text-gray-500">{p.code || '—'}</td>
-                  <td className="table-td"><span className="badge-blue">{p.category}</span></td>
+                  <td className="table-td"><span className="badge badge-blue">{p.category}</span></td>
                   <td className="table-td font-medium text-primary">{formatPrice(p.price)}</td>
-                  <td className="table-td">{p.bedrooms ? `${p.bedrooms}B/${p.bathrooms}Ba` : '—'}</td>
+                  <td className="table-td">{p.bedrooms ? `${p.bedrooms}B / ${p.bathrooms}Ba` : '—'}</td>
                   <td className="table-td">
                     <span className={`badge ${p.status === 'available' ? 'badge-green' : p.status === 'booked' ? 'badge-yellow' : p.status === 'sold' ? 'badge-red' : 'badge-gray'}`}>{p.status}</span>
                   </td>
@@ -100,6 +103,22 @@ export default function PropertiesList() {
             </tbody>
           </table>
         </div>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
+            <span className="text-sm text-gray-500">Page {page} of {totalPages} ({total} total)</span>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="p-1.5 rounded border disabled:opacity-40 hover:bg-white"><ChevronLeft size={16} /></button>
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const start = Math.max(1, Math.min(page - 2, totalPages - 4));
+                const pg = start + i;
+                return pg <= totalPages ? (
+                  <button key={pg} onClick={() => setPage(pg)} className={`w-8 h-8 text-sm rounded ${pg === page ? 'bg-primary text-white' : 'border hover:bg-white'}`}>{pg}</button>
+                ) : null;
+              })}
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="p-1.5 rounded border disabled:opacity-40 hover:bg-white"><ChevronRight size={16} /></button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,0 +1,6 @@
+- [Platform Architecture](platform-architecture.md) — 3-service monorepo: publicwebsite (5000), admin (3001), server (5001); all data from API, no mocks
+- [Auth & RBAC](auth-rbac.md) — JWT + protect middleware; superadmin role required for user management & destructive ops; authorize() must be imported explicitly per route file
+- [Booking Integrity](booking-integrity.md) — bookings use DB transaction + FOR UPDATE lock + active-booking uniqueness check; property status updated atomically in same tx
+- [Leads Route Order](leads-route-order.md) — /followups/today and /followups/:id/complete must be declared BEFORE /:id to avoid Express swallowing them as id="followups"
+- [Swiper Blocked](swiper-blocked.md) — swiper package is blocked by Replit security firewall; not needed (publicwebsite has custom carousel); remove from package.json if it appears
+- [Publicwebsite Port](publicwebsite-port.md) — vite.config.ts port is overridden by package.json dev script; change both or use only package.json: "dev": "vite --port 5000"

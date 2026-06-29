@@ -28,9 +28,10 @@ export default function Reports() {
   const monthlyLeads = dashData?.data?.monthly_leads || [];
 
   const exportCSV = (data: any[], filename: string) => {
-    if (!data.length) return;
-    const headers = Object.keys(data[0]).join(',');
-    const rows = data.map(r => Object.values(r).map(v => `"${v || ''}"`).join(',')).join('\n');
+    if (!data || !data.length) { alert('No data to export'); return; }
+    const safeKeys = Object.keys(data[0]);
+    const headers = safeKeys.join(',');
+    const rows = data.map(r => safeKeys.map(k => `"${(r[k] ?? '').toString().replace(/"/g, '""')}"`).join(',')).join('\n');
     const blob = new Blob([`${headers}\n${rows}`], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = `${filename}.csv`; a.click();
